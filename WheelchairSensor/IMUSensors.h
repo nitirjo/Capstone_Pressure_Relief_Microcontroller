@@ -4,8 +4,10 @@
 #include <Adafruit_LSM6DSO32.h>
 
 #define PI 3.14159
-#define GYRO_WEIGHT 1.0
-#define ACC_WEIGHT 0.0
+#define GYRO_WEIGHT 0.9
+#define ACC_WEIGHT 0.1
+
+#define CALIBRATION_CYCLES 100
 
 #define DEFAULT_AX 0.0
 #define DEFAULT_AY 0.0
@@ -40,13 +42,14 @@ struct IMUSensor {
 
   // Connected status and the IMU object
   int connected;
+  uint8_t id;
   Adafruit_LSM6DSO32 imu;
 } ;
 
 // Initialize the imu sensor struct
 // Returns 1 if the sensor failed to connect
 // Returns 0 otherwise
-int initIMU(struct IMUSensor *sensor);
+int initIMU(struct IMUSensor *sensor, uint8_t addr, uint8_t id);
 
 // Updates the sensor variables in the sensor struct
 // Returns 1 if the sensor is not connected

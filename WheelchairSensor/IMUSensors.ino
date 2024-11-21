@@ -1,10 +1,16 @@
 #include <Adafruit_LSM6DSO32.h>
 #include <math.h>
+#include <Wire.h>
+#include "Mux_Control.h"
 #include "IMUSensors.h"
 
 // Initialize the imu sensor struct
-int initIMU(struct IMUSensor *sensor, uint8_t address) {
-  sensor->connected = sensor->imu.begin_I2C(address);
+int initIMU(struct IMUSensor *sensor, uint8_t addr, uint8_t id) {
+  // Set ID and SEIZE CONTROL! of the MUX
+  sensor->id = id;
+  selectMuxPort(id);
+  
+  sensor->connected = sensor->imu.begin_I2C(addr);
   
   // If sensor not found, quit
   if (!sensor->connected) {
@@ -26,6 +32,7 @@ int initIMU(struct IMUSensor *sensor, uint8_t address) {
   sensor->gyroAngleX = 0;
   sensor->gyroAngleY = 0;
 
+
   // TODO: calibration routine. may want to break out into separate function
   calibrateIMU(sensor);
 
@@ -40,6 +47,9 @@ int readIMU(struct IMUSensor *sensor) {
   if(!sensor->connected) {
     return 1;
   }
+
+  // Set MUX port to this
+  selectMuxPort(sensor->id);
 
   // Update values
   sensor->imu.getEvent(&(sensor->accel), &(sensor->gyro), &(sensor->temp));
@@ -96,7 +106,7 @@ void calibrateIMU(struct IMUSensor *sensor) {
   sensor->accOffsetY = DEFAULT_AY - sensor->accel.acceleration.y;
   sensor->accOffsetZ = DEFAULT_AZ - sensor->accel.acceleration.z;
 
-  // ignore us :)
+  // Average a bunch of gyro measurements to get 
   sensor->gyroOffsetX = 0;
   sensor->gyroOffsetY = 0;
   sensor->gyroOffsetZ = 0;
