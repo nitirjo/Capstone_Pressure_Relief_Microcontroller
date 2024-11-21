@@ -5,14 +5,15 @@
 #include "BluetoothComm.h"
 #include "IMUSensors.h"
 
-#define SENSOR_ADDR_1 0x70;
+#define DEFAULT_DSO32 0x6A
+#define MUX_ADDR 0x70
 
 struct IMUSensor sensor;
 
 void setup() {
   Serial.begin(9600);  
   initBLE();
-  initIMU(&sensor, SENSOR_ADDR_1);
+  initIMU(&sensor, MUX_ADDR, 0);
   calibrateIMU(&sensor);
 }
 

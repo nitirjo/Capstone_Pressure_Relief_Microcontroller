@@ -1,10 +1,11 @@
 #include <Adafruit_LSM6DSO32.h>
 #include <math.h>
+#include <Wire.h>
 #include "IMUSensors.h"
 
 // Initialize the imu sensor struct
-int initIMU(struct IMUSensor *sensor, uint8_t address) {
-  sensor->connected = sensor->imu.begin_I2C(address);
+int initIMU(struct IMUSensor *sensor, uint8_t addr, uint8_t id) {
+  sensor->connected = sensor->imu.begin_I2C(addr, &Wire, id);
   
   // If sensor not found, quit
   if (!sensor->connected) {
@@ -25,6 +26,9 @@ int initIMU(struct IMUSensor *sensor, uint8_t address) {
   sensor->accAngleY = 0;
   sensor->gyroAngleX = 0;
   sensor->gyroAngleY = 0;
+
+  // Set ID
+  sensor->id = id;
 
   // TODO: calibration routine. may want to break out into separate function
   calibrateIMU(sensor);
