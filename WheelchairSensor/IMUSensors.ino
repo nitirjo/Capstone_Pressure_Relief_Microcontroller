@@ -6,14 +6,16 @@
 
 // Initialize the imu sensor struct
 int initIMU(struct IMUSensor *sensor, uint8_t addr, uint8_t id) {
+  // Set ID and SEIZE CONTROL! of the MUX
+  sensor->id = id;
+  selectMuxPort(id);
+  
   sensor->connected = sensor->imu.begin_I2C(addr);
   
   // If sensor not found, quit
   if (!sensor->connected) {
     return sensor->connected;
   }
-
-  selectMuxPort(id);
 
   // Sensor settings
   sensor->imu.setAccelRange(LSM6DSO32_ACCEL_RANGE_8_G);
@@ -30,8 +32,6 @@ int initIMU(struct IMUSensor *sensor, uint8_t addr, uint8_t id) {
   sensor->gyroAngleX = 0;
   sensor->gyroAngleY = 0;
 
-  // Set ID
-  sensor->id = id;
 
   // TODO: calibration routine. may want to break out into separate function
   calibrateIMU(sensor);
@@ -106,7 +106,7 @@ void calibrateIMU(struct IMUSensor *sensor) {
   sensor->accOffsetY = DEFAULT_AY - sensor->accel.acceleration.y;
   sensor->accOffsetZ = DEFAULT_AZ - sensor->accel.acceleration.z;
 
-  // ignore us :)
+  // Average a bunch of gyro measurements to get 
   sensor->gyroOffsetX = 0;
   sensor->gyroOffsetY = 0;
   sensor->gyroOffsetZ = 0;

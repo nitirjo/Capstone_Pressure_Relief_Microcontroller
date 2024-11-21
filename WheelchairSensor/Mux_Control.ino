@@ -1,5 +1,6 @@
 /*
   Basic control and commands for the PCA9548A/TCA9548A I2C multiplexer
+  Edited from code provided by SparkFun Electronics
 */
 
 #define MUX_ADDR 0x70 //7-bit unshifted default I2C Address

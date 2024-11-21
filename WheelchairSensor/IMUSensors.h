@@ -4,8 +4,10 @@
 #include <Adafruit_LSM6DSO32.h>
 
 #define PI 3.14159
-#define GYRO_WEIGHT 1.0
-#define ACC_WEIGHT 0.0
+#define GYRO_WEIGHT 0.9
+#define ACC_WEIGHT 0.1
+
+#define CALIBRATION_CYCLES 100
 
 #define DEFAULT_AX 0.0
 #define DEFAULT_AY 0.0
