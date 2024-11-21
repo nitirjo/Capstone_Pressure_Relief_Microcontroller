@@ -1,16 +1,19 @@
 #include <Adafruit_LSM6DSO32.h>
 #include <math.h>
 #include <Wire.h>
+#include "Mux_Control.h"
 #include "IMUSensors.h"
 
 // Initialize the imu sensor struct
 int initIMU(struct IMUSensor *sensor, uint8_t addr, uint8_t id) {
-  sensor->connected = sensor->imu.begin_I2C(addr, &Wire, id);
+  sensor->connected = sensor->imu.begin_I2C(addr);
   
   // If sensor not found, quit
   if (!sensor->connected) {
     return sensor->connected;
   }
+
+  selectMuxPort(id);
 
   // Sensor settings
   sensor->imu.setAccelRange(LSM6DSO32_ACCEL_RANGE_8_G);
@@ -44,6 +47,9 @@ int readIMU(struct IMUSensor *sensor) {
   if(!sensor->connected) {
     return 1;
   }
+
+  // Set MUX port to this
+  selectMuxPort(sensor->id);
 
   // Update values
   sensor->imu.getEvent(&(sensor->accel), &(sensor->gyro), &(sensor->temp));

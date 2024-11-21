@@ -9,4 +9,3 @@ void initMUX();
 
 // Disables all other ports. Enables the input port
 void selectMuxPort(byte portNumber);
-}

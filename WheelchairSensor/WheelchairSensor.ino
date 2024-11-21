@@ -11,9 +11,11 @@
 struct IMUSensor sensor;
 
 void setup() {
-  Serial.begin(9600);  
+  Serial.begin(9600);
+  initMUX();  
+  enableMuxPort(0);
   initBLE();
-  initIMU(&sensor, MUX_ADDR, 0);
+  initIMU(&sensor, DEFAULT_DSO32, 0);
   calibrateIMU(&sensor);
 }
 
