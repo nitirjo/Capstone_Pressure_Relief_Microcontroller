@@ -32,8 +32,7 @@ int initIMU(struct IMUSensor *sensor, uint8_t addr, uint8_t id) {
   sensor->gyroAngleX = 0;
   sensor->gyroAngleY = 0;
 
-
-  // TODO: calibration routine. may want to break out into separate function
+  // Calibrate the IMU
   calibrateIMU(sensor);
 
   return sensor->connected;
@@ -53,6 +52,12 @@ int readIMU(struct IMUSensor *sensor) {
 
   // Update values
   sensor->imu.getEvent(&(sensor->accel), &(sensor->gyro), &(sensor->temp));
+
+  // Find the time elapsed since previous cycle to calculate change in gyroscope angle
+  sensor->previousTime = sensor->currentTime;
+  sensor->currentTime = millis();
+  sensor->elapsedTime = (sensor->currentTime - sensor->previousTime) / 1000.0;
+
   return 0;
 }
 
@@ -79,11 +84,6 @@ int calculateAngles(struct IMUSensor *sensor) {
   sensor->accAngleX = atan(ay / sqrt(pow(ax, 2) + pow(az, 2))) * (180 / PI);
   sensor->accAngleY = atan(-1 * ax / sqrt(pow(ay, 2) + pow(az, 2))) * (180 / PI);
 
-  // Find the time elapsed since previous cycle to calculate change in gyroscope angle
-  sensor->previousTime = sensor->currentTime;
-  sensor->currentTime = millis();
-  sensor->elapsedTime = (sensor->currentTime - sensor->previousTime) / 1000.0;
-
   // Calculate angle as based on gyro data. Calculates by adding change in angle to previous value
   sensor->gyroAngleX = sensor->gyroAngleX + gx * sensor->elapsedTime;
   sensor->gyroAngleY = sensor->gyroAngleY + gy * sensor->elapsedTime;
@@ -98,16 +98,64 @@ int calculateAngles(struct IMUSensor *sensor) {
 // Sets offset values of IMU, assumes that the IMU
 // is oriented correctly and at rest
 void calibrateIMU(struct IMUSensor *sensor) {
-  // Update values in IMU for calibration
-  readIMU(sensor);
+  // Average a bunch of measurements to get the offsets
+  double avgAccX = 0;
+  double avgAccY = 0;
+  double avgAccZ = 0;
+  double avgGyroX = 0;
+  double avgGyroY = 0;
+  double avgGyroZ = 0;
 
-  // Calculate accelerometer offsets
-  sensor->accOffsetX = DEFAULT_AX - sensor->accel.acceleration.x;
-  sensor->accOffsetY = DEFAULT_AY - sensor->accel.acceleration.y;
-  sensor->accOffsetZ = DEFAULT_AZ - sensor->accel.acceleration.z;
+  for (int i = 0; i < CALIBRATION_CYCLES; i++) {
+    // Update values
+    readIMU(sensor);
 
-  // Average a bunch of gyro measurements to get 
-  sensor->gyroOffsetX = 0;
-  sensor->gyroOffsetY = 0;
-  sensor->gyroOffsetZ = 0;
+    // Collect accelerometer values
+    avgAccX += sensor->accel.acceleration.x;
+    avgAccY += sensor->accel.acceleration.y;
+    avgAccZ += sensor->accel.acceleration.z;
+    avgGyroX += sensor->gyro.gyro.x;
+    avgGyroY += sensor->gyro.gyro.y;
+    avgGyroZ += sensor->gyro.gyro.z;
+
+    delay(20);
+  }
+
+  // Get averages
+  avgAccX /= CALIBRATION_CYCLES;
+  avgAccY /= CALIBRATION_CYCLES;
+  avgAccZ /= CALIBRATION_CYCLES;
+  avgGyroX /= CALIBRATION_CYCLES;
+  avgGyroY /= CALIBRATION_CYCLES;
+  avgGyroZ /= CALIBRATION_CYCLES;
+
+  // Set offsets based on averages
+  sensor->accOffsetX = DEFAULT_AX - avgAccX;
+  sensor->accOffsetY = DEFAULT_AY - avgAccY;
+  sensor->accOffsetZ = DEFAULT_AZ - avgAccZ;
+  // sensor->accOffsetX = 0;
+  // sensor->accOffsetY = 0;
+  // sensor->accOffsetZ = 0;
+  sensor->gyroOffsetX = -avgGyroX;
+  sensor->gyroOffsetY = -avgGyroY;
+  sensor->gyroOffsetZ = -avgGyroZ;
+
+  // Reset gyro angles
+  sensor->gyroAngleX = 0;
+  sensor->gyroAngleY = 0;
+}
+
+// Sets the angles calculated with gyroscopes to
+// that of the accelerometers.
+// This is to accomodate the drift that the gyros experience
+void recenterIMU(struct IMUSensor *sensor) {
+  // sensor->gyroAngleX = sensor->accAngleX;
+  // sensor->gyroAngleY = sensor->accAngleY;
+  if (sensor->accAngleX < ACC_ANGLE_LIMIT && sensor->accAngleX > -ACC_ANGLE_LIMIT) {
+    sensor->gyroAngleX = 0;
+  }
+
+  if (sensor->accAngleY < ACC_ANGLE_LIMIT && sensor->accAngleY > -ACC_ANGLE_LIMIT) {
+    sensor->gyroAngleY = 0;
+  }
 }

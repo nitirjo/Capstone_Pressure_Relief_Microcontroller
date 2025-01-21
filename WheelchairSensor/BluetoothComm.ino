@@ -3,6 +3,12 @@
 #include <BLEUtils.h>
 #include <BLEServer.h>
 
+
+/**
+  Initiatialize BLE-related parts of the MCU
+  Includes the server, service, characteristics, and their original values
+  Also starts the service and advertises
+*/
 void initBLE() {
   // Init device
   BLEDevice::init(DEVICE_NAME);
@@ -18,9 +24,9 @@ void initBLE() {
     pService->createCharacteristic(ANGLE_CHARACTERISTIC_UUID, BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE);
   pAngleCharacteristic->setValue("default angle");
 
-  pTimeCharacteristic =
-    pService->createCharacteristic(TIME_CHARACTERISTIC_UUID, BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE);
-  pTimeCharacteristic->setValue("default time");
+  pStatusCharacteristic =
+    pService->createCharacteristic(STATUS_CHARACTERISTIC_UUID, BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE);
+  pStatusCharacteristic->setValue("default status");
 
   pOtherCharacteristic =
     pService->createCharacteristic(OTHER_CHARACTERISTIC_UUID, BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE);

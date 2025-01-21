@@ -4,14 +4,22 @@
 #include <Adafruit_LSM6DSO32.h>
 
 #define PI 3.14159
+
+// Weights for the weighted average of gyroscope and accelerometer
+// angles. These should sum up to 1
 #define GYRO_WEIGHT 0.9
 #define ACC_WEIGHT 0.1
 
+// Number of cycles to use for calibration
 #define CALIBRATION_CYCLES 100
 
+// Values to calibrate around for accelerometer
 #define DEFAULT_AX 0.0
 #define DEFAULT_AY 0.0
 #define DEFAULT_AZ 9.8
+
+// Will reset if within plus minus this angle
+#define ACC_ANGLE_LIMIT 5
 
 struct IMUSensor {
   // Raw sensor events
@@ -64,5 +72,10 @@ void calibrateIMU(struct IMUSensor *sensor);
 // Returns 1 if the sensor is not connected
 // Returns 0 otherwise
 int calculateAngles(struct IMUSensor *sensor);
+
+// Sets the angles calculated with gyroscopes to
+// that of the accelerometers.
+// This is to accomodate the drift that the gyros experience
+void recenterIMU(struct IMUSensor *sensor);
 
 #endif 
