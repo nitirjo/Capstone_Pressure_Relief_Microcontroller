@@ -49,7 +49,7 @@ struct IMUSensor {
   float pitch;
 
   // Connected status and the IMU object
-  int connected;
+  uint8_t connected;
   uint8_t id;
   Adafruit_LSM6DSO32 imu;
 } ;
