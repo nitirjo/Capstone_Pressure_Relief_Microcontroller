@@ -1,57 +1,26 @@
 #ifndef IMUSENSORS_H
 #define IMUSENSORS_H
 
-#include <Adafruit_LSM6DSO32.h>
+#include <Adafruit_LSM9DS1.h>
+#include <Adafruit_Sensor_Calibration.h>
+#include <Adafruit_AHRS.h>
 
 #define PI 3.14159
-
-// Weights for the weighted average of gyroscope and accelerometer
-// angles. These should sum up to 1
-#define GYRO_WEIGHT 0.9
-#define ACC_WEIGHT 0.1
-
-// Number of cycles to use for calibration
-#define CALIBRATION_CYCLES 100
-
-// Values to calibrate around for accelerometer
-#define DEFAULT_AX 0.0
-#define DEFAULT_AY 0.0
-#define DEFAULT_AZ 9.8
-
-// Will reset if within plus minus this angle
-#define ACC_ANGLE_LIMIT 5
 
 struct IMUSensor {
   // Raw sensor events
   sensors_event_t accel;
   sensors_event_t gyro;
+  sensors_event_t mag;
   sensors_event_t temp;
 
-  // Values to help calculate roll, pitch
-  float previousTime;
-  float currentTime;
-  float elapsedTime;
-  float accAngleX;
-  float accAngleY;
-  float gyroAngleX;
-  float gyroAngleY;
-
-  // Accelerometer and gyroscope offsets
-  float accOffsetX;
-  float accOffsetY;
-  float accOffsetZ;
-  float gyroOffsetX;
-  float gyroOffsetY;
-  float gyroOffsetZ;
-
-  // Calculated roll, pitch. In degrees
-  float roll;
-  float pitch;
+  // Sensor fusion filter
+  Adafruit_NXPSensorFusion filter;
 
   // Connected status and the IMU object
   uint8_t connected;
   uint8_t id;
-  Adafruit_LSM6DSO32 imu;
+  Adafruit_LSM9DS1 imu;
 } ;
 
 // Initialize the imu sensor struct

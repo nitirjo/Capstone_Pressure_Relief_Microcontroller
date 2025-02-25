@@ -2,48 +2,46 @@
 #include <BLEUtils.h>
 #include <BLEServer.h>
 #include <sstream>
-#include "BluetoothComm.h"
+#include <Adafruit_AHRS.h>
 #include "IMUSensors.h"
 #include "Devices.h"
 
-// Gyroscope tries to reset to accelerometer values
-// everything GYRO_RESET_FREQ cycles (MAX 255)
-#define GYRO_RESET_FREQ 100
+uint8_t aliveCounter = 0;
+uint32_t timestamp;
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   initMUX();
-  initBLE();
 
-  //sensors = (struct IMUSensor*) malloc(SENSOR_COUNT*sizeof(struct IMUSensor));
+  // Initialize all IMU sensors
   for (int i = 0; i < SENSOR_COUNT; i++) {
-    initIMU(&sensors[i], DEFAULT_DSO32, i);
+    initIMU(&sensors[i], i);
     calibrateIMU(&sensors[i]);
   }
+
+  // Get initial value of timestamp for managing update rate
+  timestamp = millis();
 
   Serial.println("STARTED");
 }
 
 void loop() {
-  
-  // IMU stuff
+  // Filter update rate
+  if ((millis() - timestamp) < (1000 / FILTER_UPDATE_RATE_HZ)) {
+    return;
+  }
+  timestamp = millis();
+
+  // Update IMU and calculated values
   for (int i = 0; i < SENSOR_COUNT; i++) {
     readIMU(&sensors[i]);
     calculateAngles(&sensors[i]);
-  }
-
-  // Every  cycles, recenter the IMUs
-  if (aliveCounter==GYRO_RESET_FREQ) {
-    for (int i = 0; i < SENSOR_COUNT; i++) {
-      recenterIMU(&sensors[i]);
-    }
   }
 
   if (aliveCounter%10==0) {
     printStuff();
   }
 
-  delay(15);
   aliveCounter++;
 }
 
@@ -51,9 +49,22 @@ void loop() {
 /**
   Print data to serial. For testing purposes
 */
-void printStuff() {
-  for (int i = 0; i < SENSOR_COUNT-1; i++) {
-    Serial.printf("%f,%f,",sensors[i].roll, sensors[i].pitch);
+void printStuff() {  
+  Serial.print("Roll:  ");
+  for (int i = 0; i < SENSOR_COUNT; i++) {
+    Serial.printf("%f  ", sensors[i].filter.getRoll());
   }
-  Serial.printf("%f,%f\n",sensors[SENSOR_COUNT-1].roll, sensors[SENSOR_COUNT-1].pitch);
+  Serial.print("\n");
+
+  Serial.print("Pitch:  ");
+  for (int i = 0; i < SENSOR_COUNT; i++) {
+    Serial.printf("%f  ", sensors[i].filter.getPitch());
+  }
+  Serial.print("\n");
+
+  Serial.print("Yaw:  ");
+  for (int i = 0; i < SENSOR_COUNT; i++) {
+    Serial.printf("%f  ", sensors[i].filter.getYaw());
+  }
+  Serial.print("\n");
 }

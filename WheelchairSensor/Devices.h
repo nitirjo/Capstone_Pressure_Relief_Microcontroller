@@ -6,6 +6,8 @@
 
 #define SENSOR_COUNT 3
 
+#define FILTER_UPDATE_RATE_HZ 100
+
 //struct IMUSensor sensor
 struct IMUSensor sensors[SENSOR_COUNT];
 
