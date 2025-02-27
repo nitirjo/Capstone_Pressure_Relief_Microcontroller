@@ -3,6 +3,8 @@
 */
 //#define DBG_RDNGS
 //#define DBG_ANGLE_RDNG
+//#define DBG_STATUS_RDNG
+//#define DBG_ANGLE_CSV
 
 #include <BLEDevice.h>
 #include <BLEUtils.h>
@@ -28,7 +30,10 @@ void setup() {
   // Get initial value of timestamp for managing update rate
   timestamp = millis();
 
+  // Don't print this in csv mode, just so the output is cleaner
+  #ifndef DBG_ANGLE_CSV
   Serial.println("STARTED");
+  #endif
 }
 
 void loop() {
@@ -93,22 +98,9 @@ void printStuff() {
   // Print out the angles in CSV format
   // This only prints out the roll and pitch
   #ifdef DBG_ANGLE_CSV
-    Serial.print("Roll:  ");
-  for (int i = 0; i < SENSOR_COUNT; i++) {
-    Serial.printf("%f  ", sensors[i].filter.getRoll());
+    for (int i = 0; i < SENSOR_COUNT-1; i++) {
+    Serial.printf("%f,%f,", sensors[i].filter.getRoll(), sensors[i].filter.getPitch());
   }
-  Serial.print("\n");
-
-  Serial.print("Pitch:  ");
-  for (int i = 0; i < SENSOR_COUNT; i++) {
-    Serial.printf("%f  ", sensors[i].filter.getPitch());
-  }
-  Serial.print("\n");
-
-  Serial.print("Yaw:  ");
-  for (int i = 0; i < SENSOR_COUNT; i++) {
-    Serial.printf("%f  ", sensors[i].filter.getYaw());
-  }
-  Serial.print("\n");
+  Serial.printf("%f,%f\n", sensors[SENSOR_COUNT-1].filter.getRoll(), sensors[SENSOR_COUNT-1].filter.getPitch());
   #endif
 }
