@@ -44,7 +44,6 @@ int readIMU(struct IMUSensor *sensor) {
   // Quit early if the sensor is not connected
   if(!sensor->connected) {
     return 1;
-    Serial.println("NOT CONNECTED");
   }
 
   // Set MUX port to this
@@ -54,7 +53,14 @@ int readIMU(struct IMUSensor *sensor) {
   sensor->imu.read();
   sensor->imu.getEvent(&(sensor->accel), &(sensor->mag), &(sensor->gyro), &(sensor->temp));
 
-  return 0;
+  // Check whether or not the sensor is connected
+  // Unless the user is in freefall, accelerometer should not read a total of 0, so we check with that
+  float accX = sensor->accel.acceleration.x;
+  float accY = sensor->accel.acceleration.y;
+  float accZ = sensor->accel.acceleration.z;
+  sensor->connected = (accX * accX + accY * accY + accZ * accZ) > 0.01;
+
+  return sensor->connected;
 }
 
 // Calculates the current roll and pitch
@@ -82,24 +88,6 @@ int calculateAngles(struct IMUSensor *sensor) {
 // Sets offset values of IMU, assumes that the IMU
 // is oriented correctly and at rest
 void calibrateIMU(struct IMUSensor *sensor) {
-  // TODO
-  return;
-}
-
-// Sets the angles calculated with gyroscopes to
-// that of the accelerometers.
-// This is to accomodate the drift that the gyros experience
-void recenterIMU(struct IMUSensor *sensor) {
-  // // sensor->gyroAngleX = sensor->accAngleX;
-  // // sensor->gyroAngleY = sensor->accAngleY;
-  // if (sensor->accAngleX < ACC_ANGLE_LIMIT && sensor->accAngleX > -ACC_ANGLE_LIMIT) {
-  //   sensor->gyroAngleX = 0;
-  // }
-
-  // if (sensor->accAngleY < ACC_ANGLE_LIMIT && sensor->accAngleY > -ACC_ANGLE_LIMIT) {
-  //   sensor->gyroAngleY = 0;
-  // }
-
   // TODO
   return;
 }

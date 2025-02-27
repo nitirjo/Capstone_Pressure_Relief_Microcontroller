@@ -1,10 +1,10 @@
 /*
   Debugging definitions
 */
-//#define DBG_RDNGS
-//#define DBG_ANGLE_RDNG
-//#define DBG_STATUS_RDNG
-//#define DBG_ANGLE_CSV
+#define DBG_RDNGS         // define to print any kind of reading
+//#define DBG_ANGLE_RDNG    // define to print the angle in a easy-to-read format
+#define DBG_STATUS_RDNG   // define to print out each sensor's connected status
+//#define DBG_ANGLE_CSV     // define to print angles in csv format for testing
 
 #include <BLEDevice.h>
 #include <BLEUtils.h>
