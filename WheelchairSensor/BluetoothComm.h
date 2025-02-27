@@ -15,7 +15,6 @@
 void initBLE();
 
 // Globals for each the parts of the BLE server
-uint8_t aliveCounter=0;
 BLEServer *pServer;
 BLEService *pService;
 BLECharacteristic *pAngleCharacteristic;

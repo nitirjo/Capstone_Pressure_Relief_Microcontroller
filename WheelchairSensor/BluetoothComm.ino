@@ -1,3 +1,8 @@
+/*
+  Debugging definitions
+*/
+//#define DEBUG_ONREAD
+
 #include "BluetoothComm.h"
 #include <BLEDevice.h>
 #include <BLEUtils.h>
@@ -19,13 +24,14 @@ class AngleCharacteristicCallbacks: public BLECharacteristicCallbacks {
     } sensorReadings;
 
     for (int i = 0; i < SENSOR_COUNT; i++) {
-      sensorReadings.float_arr[i*2] = sensors[i].roll;
-      sensorReadings.float_arr[i*2+1] = sensors[i].pitch;
+      sensorReadings.float_arr[i*2] = sensors[i].filter.getRoll();
+      sensorReadings.float_arr[i*2+1] = sensors[i].filter.getPitch();
     }
 
     // Calculate size of data
     int dataSize = sizeof(float) * SENSOR_COUNT * 2;
 
+    #ifdef DEBUG_ONREAD
     Serial.println("---");
     for(int i = 0; i < SENSOR_COUNT*2; i++) {
       Serial.print(sensorReadings.float_arr[i]);
@@ -36,6 +42,7 @@ class AngleCharacteristicCallbacks: public BLECharacteristicCallbacks {
       Serial.print(sensorReadings.byte_arr[i*4+3],HEX);
       Serial.println();
     }
+    #endif
 
     pCharacteristic->setValue(sensorReadings.byte_arr, dataSize);
   }
