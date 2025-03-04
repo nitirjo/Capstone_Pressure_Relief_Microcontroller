@@ -61,7 +61,7 @@ class StatusCharacteristicCallbacks: public BLECharacteristicCallbacks {
   }
 };
 
-class OtherCharaceristicCallbacks: public BLECharacteristicCallbacks {
+class OtherCharacteristicCallbacks: public BLECharacteristicCallbacks {
   void onWrite(BLECharacteristic* pCharacteristic) {
     Serial.println("Someone wrote to a characteristic! WOW!\n");
     String r = pCharacteristic->getValue();
@@ -99,6 +99,8 @@ void initBLE() {
 
   // Set callbacks for characteristics
   pAngleCharacteristic->setCallbacks(new AngleCharacteristicCallbacks());
+  pStatusCharacteristic->setCallbacks(new StatusCharacteristicCallbacks());
+  pOtherCharacteristic->setCallbacks(new OtherCharacteristicCallbacks());
 
   // Start service
   pService->start();

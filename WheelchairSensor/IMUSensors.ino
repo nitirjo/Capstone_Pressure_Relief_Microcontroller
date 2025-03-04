@@ -41,11 +41,6 @@ int initIMU(struct IMUSensor *sensor, uint8_t id) {
 // Returns 1 if the sensor is not connected
 // Returns 0 otherwise
 int readIMU(struct IMUSensor *sensor) {
-  // Quit early if the sensor is not connected
-  if(!sensor->connected) {
-    return 1;
-  }
-
   // Set MUX port to this
   selectMuxPort(sensor->id);
 
@@ -54,11 +49,16 @@ int readIMU(struct IMUSensor *sensor) {
   sensor->imu.getEvent(&(sensor->accel), &(sensor->mag), &(sensor->gyro), &(sensor->temp));
 
   // Check whether or not the sensor is connected
-  // Unless the user is in freefall, accelerometer should not read a total of 0, so we check with that
-  float accX = sensor->accel.acceleration.x;
-  float accY = sensor->accel.acceleration.y;
-  float accZ = sensor->accel.acceleration.z;
-  sensor->connected = (accX * accX + accY * accY + accZ * accZ) > 0.01;
+  Wire.beginTransmission(DEFAULT_DSO32);    // Get the slave's attention, tell it we're sending a command byte
+  Wire.write(WHO_AM_I_REG);                               //  The command byte, sets pointer to register with address of 0x32
+  Wire.endTransmission();
+  Wire.requestFrom(DEFAULT_DSO32,1);          // Tell slave we need to read 1byte from the current register
+  byte check = Wire.read();        // read that byte into 'slaveByte2' variable
+  if (check != 0x68) {
+    sensor->connected = 0;
+  } else if (!sensor->connected) { // Re-init a previously disconnected IMU
+    initIMU(&sensors[sensor->id], sensor->id);
+  }
 
   return sensor->connected;
 }

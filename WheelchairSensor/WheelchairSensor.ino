@@ -2,9 +2,10 @@
   Debugging definitions
 */
 #define DBG_RDNGS         // define to print any kind of reading
-//#define DBG_ANGLE_RDNG    // define to print the angle in a easy-to-read format
+#define DBG_ANGLE_RDNG    // define to print the angle in a easy-to-read format
 #define DBG_STATUS_RDNG   // define to print out each sensor's connected status
 //#define DBG_ANGLE_CSV     // define to print angles in csv format for testing
+#define DBG_RDNGS_RAW 0   // define to print out the sensor's raw readings
 
 #include <BLEDevice.h>
 #include <BLEUtils.h>
@@ -20,6 +21,7 @@ uint32_t timestamp;
 void setup() {
   Serial.begin(115200);
   initMUX();
+  initBLE();
 
   // Initialize all IMU sensors
   for (int i = 0; i < SENSOR_COUNT; i++) {
@@ -88,10 +90,11 @@ void printStuff() {
   #ifdef DBG_STATUS_RDNG
   for (int i = 0; i < SENSOR_COUNT; i++) {
     if (sensors[i].connected) {
-      Serial.printf("Sensor %d: ON", i);
+      Serial.printf("Sensor %d: ON     ", i);
     } else {
-      Serial.printf("Sensor %d: OFF", i);
+      Serial.printf("Sensor %d: OFF    ", i);
     }
+    Serial.printf("\n");
   }
   #endif
 
@@ -102,5 +105,15 @@ void printStuff() {
     Serial.printf("%f,%f,", sensors[i].filter.getRoll(), sensors[i].filter.getPitch());
   }
   Serial.printf("%f,%f\n", sensors[SENSOR_COUNT-1].filter.getRoll(), sensors[SENSOR_COUNT-1].filter.getPitch());
+  #endif
+
+  #ifdef DBG_RDNGS_RAW
+  Serial.printf("Sensor DBG_RDNGS_RAW:\n");
+  Serial.printf("\tAcc: x: %f\ty: %f\tz: %f\n", sensors[DBG_RDNGS_RAW].accel.acceleration.x, 
+      sensors[DBG_RDNGS_RAW].accel.acceleration.y, sensors[DBG_RDNGS_RAW].accel.acceleration.z);
+  Serial.printf("\tGyr: x: %f\ty: %f\tz: %f\n", sensors[DBG_RDNGS_RAW].gyro.gyro.x, 
+      sensors[DBG_RDNGS_RAW].gyro.gyro.y, sensors[DBG_RDNGS_RAW].gyro.gyro.z);
+  Serial.printf("\tMag: x: %f\ty: %f\tz: %f\n", sensors[DBG_RDNGS_RAW].mag.magnetic.x, 
+      sensors[DBG_RDNGS_RAW].mag.magnetic.y, sensors[DBG_RDNGS_RAW].mag.magnetic.z);    
   #endif
 }
