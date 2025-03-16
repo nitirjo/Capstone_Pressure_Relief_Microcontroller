@@ -1,10 +1,10 @@
 /*
   Debugging definitions
 */
-#define DBG_RDNGS         // define to print any kind of reading
+//#define DBG_RDNGS         // define to print any kind of reading
 //#define DBG_ANGLE_RDNG    // define to print the angle in a easy-to-read format
 //#define DBG_STATUS_RDNG   // define to print out each sensor's connected status
-#define DBG_ANGLE_CSV     // define to print angles in csv format for testing
+//#define DBG_ANGLE_CSV     // define to print angles in csv format for testing
 //#define DBG_RDNGS_RAW 0   // define to print out the sensor's raw readings
 
 #include <BLEDevice.h>
@@ -30,7 +30,7 @@ void setup() {
   // Initialize all IMU sensors
   for (int i = 0; i < SENSOR_COUNT; i++) {
     initIMU(&sensors[i], i);
-    //calibrateIMU(&sensors[i]);
+    calibrateIMU(&sensors[i]);
   }
 
   // Get initial value of timestamp for managing update rate
@@ -63,9 +63,8 @@ void loop() {
   if (aliveCounter%10==0) {
     printStuff();
   }
-  #endif
-
   aliveCounter++;
+  #endif
 }
 
 
@@ -77,19 +76,19 @@ void printStuff() {
   #ifdef DBG_ANGLE_RDNG
   Serial.print("Roll:  ");
   for (int i = 0; i < SENSOR_COUNT; i++) {
-    Serial.printf("%f  ", sensors[i].currRoll);
+    Serial.printf("%f  ", sensors[i].filter.getRoll());
   }
   Serial.print("\n");
 
   Serial.print("Pitch:  ");
   for (int i = 0; i < SENSOR_COUNT; i++) {
-    Serial.printf("%f  ", sensors[i].currPitch);
+    Serial.printf("%f  ", sensors[i].filter.getPitch());
   }
   Serial.print("\n");
 
   Serial.print("Yaw:  ");
   for (int i = 0; i < SENSOR_COUNT; i++) {
-    Serial.printf("%f  ", sensors[i].currYaw);
+    Serial.printf("%f  ", sensors[i].filter.getYaw());
   }
   Serial.print("\n");
   #endif
@@ -110,9 +109,9 @@ void printStuff() {
   // This only prints out the roll and pitch
   #ifdef DBG_ANGLE_CSV
     for (int i = 0; i < SENSOR_COUNT-1; i++) {
-    Serial.printf("%f,%f,", sensors[i].currRoll, sensors[i].currPitch);
+    Serial.printf("%f,%f,", sensors[i].filter.getRoll(), sensors[i].filter.getPitch());
   }
-  Serial.printf("%f,%f\n", sensors[SENSOR_COUNT-1].currRoll, sensors[SENSOR_COUNT-1].currPitch);
+  Serial.printf("%f,%f\n", sensors[SENSOR_COUNT-1].filter.getRoll(), sensors[SENSOR_COUNT-1].filter.getPitch());
   #endif
 
   #ifdef DBG_RDNGS_RAW

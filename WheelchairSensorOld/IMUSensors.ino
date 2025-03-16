@@ -82,44 +82,12 @@ int calculateAngles(struct IMUSensor *sensor) {
                 sensor->accel.acceleration.x, sensor->accel.acceleration.y, sensor->accel.acceleration.z, 
                 sensor->mag.magnetic.x, sensor->mag.magnetic.y, sensor->mag.magnetic.z);
 
-  sensor->currPitch = sensor->filter.getPitch() - sensor->initPitch;
-  sensor->currRoll = sensor->filter.getRoll() - sensor->initRoll;
-  sensor->currYaw = sensor->filter.getYaw() - sensor->initYaw;
-
   return 0;
 }
 
 // Sets offset values of IMU, assumes that the IMU
 // is oriented correctly and at rest
 void calibrateIMU(struct IMUSensor *sensor) {
-  // Don't calibrate if already calibrated
-  // This may occur if a sensor is disconnected then reconnected
-  if (sensor->calibrated) {
-    return;
-  }
-
-  int cycles = 0;
-  uint32_t timestamp = millis();
-  while(cycles < 500) {
-    // Filter update rate
-    if ((millis() - timestamp) < (1000 / FILTER_UPDATE_RATE_HZ)) {
-      continue;
-    }
-    timestamp = millis();
-
-    // Update angle data
-    calculateAngles(sensor);
-    
-    cycles++;
-  }
-
-
-  // Set initial offsets to their first calculated values
-  sensor->initPitch = sensor->filter.getPitch();
-  sensor->initRoll = sensor->filter.getRoll();
-  sensor->initYaw = sensor->filter.getYaw();
-
-  sensor->calibrated = 1;
-
+  // TODO
   return;
 }

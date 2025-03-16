@@ -24,8 +24,8 @@ class AngleCharacteristicCallbacks: public BLECharacteristicCallbacks {
     } sensorReadings;
 
     for (int i = 0; i < SENSOR_COUNT; i++) {
-      sensorReadings.float_arr[i*2] = sensors[i].currRoll;
-      sensorReadings.float_arr[i*2+1] = sensors[i].currPitch;
+      sensorReadings.float_arr[i*2] = sensors[i].filter.getRoll();
+      sensorReadings.float_arr[i*2+1] = sensors[i].filter.getPitch();
     }
 
     // Calculate size of data
