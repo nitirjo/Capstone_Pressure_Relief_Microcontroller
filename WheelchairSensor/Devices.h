@@ -11,7 +11,6 @@
 #define WHO_AM_I_REG 0x0F
 #define WHO_AM_I 0x68
 
-//struct IMUSensor sensor
 struct IMUSensor sensors[SENSOR_COUNT];
 
 #endif
