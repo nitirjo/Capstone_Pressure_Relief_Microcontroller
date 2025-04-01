@@ -69,6 +69,14 @@ class OtherCharacteristicCallbacks: public BLECharacteristicCallbacks {
   }
 };
 
+class DisReconnectCallbacks: public BLEServerCallbacks {
+  void onDisconnect(BLEServer *pServer) {
+    // This is a relatively safe if not inefficient way to 
+    // let the app reconnect to the BLE server
+    abort();
+  }
+};
+
 /**
   Initiatialize BLE-related parts of the MCU
   Includes the server, service, characteristics, and their original values
@@ -101,6 +109,9 @@ void initBLE() {
   pAngleCharacteristic->setCallbacks(new AngleCharacteristicCallbacks());
   pStatusCharacteristic->setCallbacks(new StatusCharacteristicCallbacks());
   pOtherCharacteristic->setCallbacks(new OtherCharacteristicCallbacks());
+
+  // Set callback for disconnects
+  pServer->setCallbacks(new DisReconnectCallbacks());
 
   // Start service
   pService->start();

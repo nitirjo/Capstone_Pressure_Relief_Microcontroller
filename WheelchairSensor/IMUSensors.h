@@ -17,11 +17,10 @@ struct IMUSensor {
   // Sensor fusion filter
   Adafruit_NXPSensorFusion filter;
 
-  // Initial values, used as a reference
-  float initRoll = 0;
-  float initPitch = 0;
-  float initYaw = 0;
-  uint8_t calibrated = 0;
+  // Calibration values
+  float gyroXCalib, gyroYCalib, gyroZCalib;
+  float accXCalib, accYCalib, accZCalib;
+  float magXCalib, magYCalib, magZCalib;
 
   // Current values
   float currRoll, currPitch, currYaw;
