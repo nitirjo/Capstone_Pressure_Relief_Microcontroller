@@ -39,7 +39,7 @@ int initIMU(struct IMUSensor *sensor, uint8_t id) {
 // Returns 1 if the sensor is not connected
 // Returns 0 otherwise
 int readIMU(struct IMUSensor *sensor) {
-  if (!sensor->connected) return 1;
+  //if (!sensor->connected) return 1;
   
   // Set MUX port to this
   selectMuxPort(sensor->id);
