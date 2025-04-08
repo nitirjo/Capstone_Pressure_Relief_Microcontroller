@@ -39,7 +39,7 @@ int initIMU(struct IMUSensor *sensor, uint8_t id) {
 // Returns 1 if the sensor is not connected
 // Returns 0 otherwise
 int readIMU(struct IMUSensor *sensor) {
-  //if (!sensor->connected) return 1;
+  if (!sensor->connected) return 1;
   
   // Set MUX port to this
   selectMuxPort(sensor->id);
@@ -53,7 +53,7 @@ int readIMU(struct IMUSensor *sensor) {
   if (check != 0x68) {
     sensor->connected = 0;
   } else if (!sensor->connected) { // Re-init a previously disconnected IMU
-    initIMU(&sensors[sensor->id], sensor->id);
+    initIMU(&sensors[sensor->id-1], sensor->id);
   }
 
   // Update values
@@ -100,7 +100,7 @@ int calculateAngles(struct IMUSensor *sensor) {
 // Loads in offsets from the header file. Only works for 
 // sensors with id's 0-2
 void calibrateIMU(struct IMUSensor *sensor) {
-  if (sensor->id == 0) {
+  if (sensor->id == 1) {
     sensor->gyroXCalib = GYRO0_X_CALIB;
     sensor->gyroYCalib = GYRO0_X_CALIB;
     sensor->gyroZCalib = GYRO0_X_CALIB;
@@ -110,7 +110,7 @@ void calibrateIMU(struct IMUSensor *sensor) {
     sensor->magXCalib = MAG0_X_CALIB;
     sensor->magYCalib = MAG0_X_CALIB;
     sensor->magZCalib = MAG0_X_CALIB;
-  } else if (sensor->id == 1) {
+  } else if (sensor->id == 2) {
     sensor->gyroXCalib = GYRO1_X_CALIB;
     sensor->gyroYCalib = GYRO1_X_CALIB;
     sensor->gyroZCalib = GYRO1_X_CALIB;
@@ -120,7 +120,7 @@ void calibrateIMU(struct IMUSensor *sensor) {
     sensor->magXCalib = MAG1_X_CALIB;
     sensor->magYCalib = MAG1_X_CALIB;
     sensor->magZCalib = MAG1_X_CALIB;
-  } else if (sensor->id == 2) {
+  } else if (sensor->id == 3) {
     sensor->gyroXCalib = GYRO2_X_CALIB;
     sensor->gyroYCalib = GYRO2_X_CALIB;
     sensor->gyroZCalib = GYRO2_X_CALIB;

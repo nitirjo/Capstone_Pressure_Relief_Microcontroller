@@ -1,9 +1,9 @@
 /*
   Debugging definitions
 */
-//#define DBG_RDNGS         // define to print any kind of reading
-//#define DBG_ANGLE_RDNG    // define to print the angle in a easy-to-read format
-//#define DBG_STATUS_RDNG   // define to print out each sensor's connected status
+#define DBG_RDNGS         // define to print any kind of reading
+#define DBG_ANGLE_RDNG    // define to print the angle in a easy-to-read format
+#define DBG_STATUS_RDNG   // define to print out each sensor's connected status
 //#define DBG_ANGLE_CSV     // define to print angles in csv format for testing
 //#define DBG_RDNGS_RAW 0   // define to print out the sensor's raw readings
 
@@ -29,7 +29,7 @@ void setup() {
 
   // Initialize all IMU sensors
   for (int i = 0; i < SENSOR_COUNT; i++) {
-    initIMU(&sensors[i], i);
+    initIMU(&sensors[i], i+1);
     calibrateIMU(&sensors[i]);
   }
 
