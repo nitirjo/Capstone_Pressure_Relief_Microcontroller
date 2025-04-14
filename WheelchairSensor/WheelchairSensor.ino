@@ -17,7 +17,7 @@ void setup() {
 
   //sensors = (struct IMUSensor*) malloc(SENSOR_COUNT*sizeof(struct IMUSensor));
   for (int i = 0; i < SENSOR_COUNT; i++) {
-    initIMU(&sensors[i], DEFAULT_DSO32, i);
+    initIMU(&sensors[i], DEFAULT_DSO32, i+1);
     calibrateIMU(&sensors[i]);
   }
 
