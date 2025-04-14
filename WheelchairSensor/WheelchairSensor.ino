@@ -5,9 +5,6 @@
 //#define DBG_ANGLE_RDNG    // define to print the angle in a easy-to-read format
 //#define DBG_STATUS_RDNG   // define to print out each sensor's connected status
 //#define DBG_ANGLE_CSV     // define to print angles in csv format for testing
-//#define DBG_ANGLE_RDNG    // define to print the angle in a easy-to-read format
-//#define DBG_STATUS_RDNG   // define to print out each sensor's connected status
-//#define DBG_ANGLE_CSV     // define to print angles in csv format for testing
 //#define DBG_RDNGS_RAW 0   // define to print out the sensor's raw readings
 
 #include <BLEDevice.h>
